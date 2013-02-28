@@ -331,6 +331,9 @@ as a single clause.
            ,@(and properties (list "-r" properties))
            ,@(and s (list "-s")))))
 
+(defun my-eclim-java-doc-url-open (url)
+  (my-eclim-send-command "java_doc_url_open" "-u" url))
+
 (defun my-eclim-projects ()
   (my-eclim-send-json-command "projects"))
 
