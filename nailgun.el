@@ -295,6 +295,42 @@ as a single clause.
 (defun my-eclim-history-list (project file)
   (my-eclim-send-json-command "history_list" "-p" project "-f" file))
 
+(defun my-eclim-java-checkstyle (project file)
+  (my-eclim-send-json-command "java_checkstyle" "-p" project "-f" file))
+
+(defun my-eclim-java-classpath (project &optional delimiter)
+  (apply 'my-eclim-send-json-command
+         "java_classpath"
+         "-p" project
+         (and delimiter (list "-d" delimiter))))
+
+(defun my-eclim-java-classpath-variables ()
+  (my-eclim-send-json-command "java_classpath_variables"))
+
+(defun my-eclim-java-complete (project file offset encoding layout)
+  (my-eclim-send-json-command
+   "-p" project
+   "-f" file
+   "-o" offset
+   "-e" encoding
+   "-l" layout))
+
+(defun my-eclim-java-complete-package (project &optional name)
+  (apply 'my-eclim-send-json-command
+         "java_complete_package"
+         "-p" project
+         (and name (list "-n" name))))
+
+(defun my-eclim-java-constructor (project file offset &optional encoding properties s)
+  (apply 'my-eclim-send-command
+         "java_constructor"
+         "-p" project
+         "-f" file
+         "-o" offset
+         `(,@(and encoding (list "-e" encoding))
+           ,@(and properties (list "-r" properties))
+           ,@(and s (list "-s")))))
+
 (defun my-eclim-projects ()
   (my-eclim-send-json-command "projects"))
 
