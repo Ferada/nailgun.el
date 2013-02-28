@@ -259,6 +259,11 @@ as a single clause.
   (when (eql (apply 'my-eclim-send-command command args) 0)
     (with-current-buffer (get-buffer-create "*eclim*")
       (json-read-from-string (buffer-string)))))
+
+;;; commands
+
+(defun my-eclim-list-commands ()
+  (my-eclim-send-command "-?" "commands"))
 
 (defun my-eclim-ping ()
   (my-eclim-send-simple-json-command "ping"))
@@ -268,15 +273,6 @@ as a single clause.
 
 (defun my-eclim-java-unit-tests (project)
   (my-eclim-send-json-command "java_junit_tests" "-p" project))
-
-(defun my-eclim-projects ()
-  (my-eclim-send-json-command "projects"))
-
-(defun my-eclim-reload ()
-  (message (substring (my-eclim-send-simple-command "reload") 1 -1)))
-
-(defun my-eclim-shutdown ()
-  (my-eclim-send-simple-command "shutdown"))
 
 (defun my-eclim-project-info (project)
   (my-eclim-send-json-command "project_info" "-p" project))
@@ -290,11 +286,44 @@ as a single clause.
 (defun my-eclim-jobs (&optional family)
   (apply 'my-eclim-send-json-command "jobs" (and family (list "-f" family))))
 
+(defun my-eclim-history-add (project file)
+  (my-eclim-send-json-command "history_add" "-p" project "-f" file))
+
+(defun my-eclim-history-clear (project file)
+  (my-eclim-send-json-command "history_clear" "-p" project "-f" file))
+
 (defun my-eclim-history-list (project file)
   (my-eclim-send-json-command "history_list" "-p" project "-f" file))
 
-(defun my-eclim-list-commands ()
-  (my-eclim-send-command "-?" "commands"))
+(defun my-eclim-projects ()
+  (my-eclim-send-json-command "projects"))
+
+(defun my-eclim-refactor_redo (&optional p)
+  (apply 'my-eclim-send-command "refactor_redo" (and p '("-p"))))
+
+(defun my-eclim-refactor_undo (&optional p)
+  (apply 'my-eclim-send-command "refactor_undo" (and p '("-p"))))
+
+(defun my-eclim-reload ()
+  (message (substring (my-eclim-send-simple-command "reload") 1 -1)))
+
+(defun my-eclim-setting (setting)
+  (my-eclim-send-json-command "setting" "-s" setting))
+
+(defun my-eclim-settings ()
+  (my-eclim-send-json-command "settings"))
+
+;; FIXME: throws exception
+(defun my-eclim-settings-update (&optional settings)
+  (my-eclim-send-command "settings_update"))
+
+(defun my-eclim-shutdown ()
+  (my-eclim-send-simple-command "shutdown"))
+
+;; webxml_validate -p project -f file
+
+(defun my-eclim-workspace-dir ()
+  (my-eclim-send-simple-command "workspace_dir"))
 
 ;; TODO: reuse connection, restart connection, automatically connect
 ;; TODO: different connections, i.e. multiple buffers/processes
